@@ -10,10 +10,16 @@ import (
 
 	"github.com/go-delve/delve/pkg/dwarf/godwarf"
 	"github.com/go-delve/delve/pkg/dwarf/reader"
+
 	pb "github.com/parca-dev/parca/gen/proto/go/parca/metastore/v1alpha1"
 	"github.com/parca-dev/parca/pkg/metastore"
 	"github.com/parca-dev/parca/pkg/symbol/demangle"
 )
+
+type DebugInfoFile interface {
+	// SourceLines returns the resolved source lines for a given address.
+	SourceLines(addr uint64) ([]metastore.LocationLine, error)
+}
 
 type debugInfoFile struct {
 	demangler *demangle.Demangler
@@ -25,7 +31,7 @@ type debugInfoFile struct {
 }
 
 // NewDebugInfoFile creates a new DebugInfoFile.
-func NewDebugInfoFile(path string, m *pb.Mapping, demangler *demangle.Demangler) (*debugInfoFile, error) {
+func NewDebugInfoFile(path string, m *pb.Mapping, demangler *demangle.Demangler) (DebugInfoFile, error) {
 	f, err := elf.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open elf: %w", err)
@@ -48,12 +54,9 @@ func NewDebugInfoFile(path string, m *pb.Mapping, demangler *demangle.Demangler)
 }
 
 func (f *debugInfoFile) SourceLines(addr uint64) ([]metastore.LocationLine, error) {
-	// TODO(kakkoyun):
-	// Understand the difference between nm and addr2line implementation differences.
-
 	// The reader is positioned at byte offset 0 in the DWARF “info” section.
 	er := f.debugData.Reader()
-	cu, err := er.SeekPC(addr) // TODO(kakkoyun): Use f.base: addr - f.base or f.base + addr
+	cu, err := er.SeekPC(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +71,7 @@ func (f *debugInfoFile) SourceLines(addr uint64) ([]metastore.LocationLine, erro
 	lines := []metastore.LocationLine{}
 	var tr *godwarf.Tree
 	for _, t := range f.subprograms[cu.Offset] {
-		if t.ContainsPC(addr) { // TODO(kakkoyun): Use f.base: addr - f.base or f.base + addr
+		if t.ContainsPC(addr) {
 			tr = t
 			break
 		}
@@ -88,7 +91,7 @@ func (f *debugInfoFile) SourceLines(addr uint64) ([]metastore.LocationLine, erro
 	})
 
 	// If pc is 0 then all inlined calls will be returned.
-	for _, ch := range reader.InlineStack(tr, addr) { // TODO(kakkoyun): Use f.base: addr - f.base or f.base + addr
+	for _, ch := range reader.InlineStack(tr, addr) {
 		var name string
 		if ch.Tag == dwarf.TagSubprogram {
 			name = tr.Entry.Val(dwarf.AttrName).(string)
@@ -187,7 +190,7 @@ outer:
 
 func findLineInfo(entries []dwarf.LineEntry, rg [][2]uint64) (string, int64) {
 	file := "?"
-	var line int64 = 0
+	var line int64 // 0
 	i := sort.Search(len(entries), func(i int) bool {
 		return entries[i].Address >= rg[0][0]
 	})

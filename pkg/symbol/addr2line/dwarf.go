@@ -19,24 +19,19 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/parca-dev/parca/pkg/symbol/demangle"
-	"github.com/parca-dev/parca/pkg/symbol/elfutils"
 
 	pb "github.com/parca-dev/parca/gen/proto/go/parca/metastore/v1alpha1"
 	"github.com/parca-dev/parca/pkg/metastore"
+	"github.com/parca-dev/parca/pkg/symbol/demangle"
+	"github.com/parca-dev/parca/pkg/symbol/elfutils"
 )
 
 var ErrLocationFailedBefore = errors.New("failed to symbolize location, attempts are exhausted")
 
-type DebugInfoFile interface {
-	// SourceLines returns the resolved source lines for a given address.
-	SourceLines(addr uint64) ([]metastore.LocationLine, error)
-}
-
 type DwarfLiner struct {
 	logger log.Logger
 
-	dbgFile DebugInfoFile
+	dbgFile elfutils.DebugInfoFile
 
 	attemptThreshold int
 	attempts         map[uint64]int
@@ -44,7 +39,6 @@ type DwarfLiner struct {
 }
 
 // DWARF is a symbolizer that uses DWARF debug info to symbolize addresses.
-// TODO(kakkoyun): Introduce functional options for attemptThreshold and demangler.
 func DWARF(logger log.Logger, path string, m *pb.Mapping, demangler *demangle.Demangler, attemptThreshold int) (*DwarfLiner, error) {
 	dbgFile, err := elfutils.NewDebugInfoFile(path, m, demangler)
 	if err != nil {
