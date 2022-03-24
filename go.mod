@@ -31,13 +31,13 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0
 	github.com/prometheus/prometheus v2.5.0+incompatible
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/thanos-io/thanos v0.23.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.24.0
-	go.opentelemetry.io/otel v1.0.1
+	go.opentelemetry.io/otel v1.6.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.0.1
 	go.opentelemetry.io/otel/sdk v1.0.1
-	go.opentelemetry.io/otel/trace v1.0.1
+	go.opentelemetry.io/otel/trace v1.6.0
 	go.uber.org/atomic v1.9.0
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
