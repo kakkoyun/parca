@@ -13,7 +13,7 @@ require (
 	github.com/gin-gonic/gin v1.7.0 // indirect
 	github.com/go-chi/cors v1.2.0
 	github.com/go-delve/delve v1.7.2
-	github.com/go-kit/log v0.1.0
+	github.com/go-kit/log v0.2.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/goburrow/cache v0.1.4
 	github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1
@@ -28,8 +28,8 @@ require (
 	github.com/improbable-eng/grpc-web v0.14.0
 	github.com/oklog/run v1.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.11.0
-	github.com/prometheus/common v0.30.0
+	github.com/prometheus/client_golang v1.12.1
+	github.com/prometheus/common v0.33.0
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.7.0
 	github.com/thanos-io/thanos v0.23.1
@@ -39,7 +39,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.0.1
 	go.opentelemetry.io/otel/trace v1.0.1
 	go.uber.org/atomic v1.9.0
-	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
+	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83
 	google.golang.org/grpc v1.41.0
