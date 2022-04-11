@@ -2956,6 +2956,7 @@
     util-deprecate "^1.0.2"
     uuid-browser "^3.1.0"
 
+<<<<<<< HEAD
 "@storybook/addon-backgrounds@6.4.21":
   version "6.4.21"
   resolved "https://registry.yarnpkg.com/@storybook/addon-backgrounds/-/addon-backgrounds-6.4.21.tgz#872a5a0232318dd5414cc929b4562d9a454c8333"
@@ -2964,10 +2965,47 @@
     "@storybook/addons" "6.4.21"
     "@storybook/api" "6.4.21"
     "@storybook/client-logger" "6.4.21"
+=======
+"@storybook/addon-actions@^6.4.15":
+  version "6.4.21"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.4.21.tgz#9a1c7c21561f4c0917743c7868c9816c96555070"
+  integrity sha512-rqEsAHwywZZv9Zzv6A/QXNLiosKY6S+JAEoT9VSeDW07d/MvH7FKoF7fQCnm3ZR53et9AazBJttoiyODZsbjxA==
+  dependencies:
+    "@storybook/addons" "6.4.21"
+    "@storybook/api" "6.4.21"
+>>>>>>> 18c973bd (build(deps-dev): bump @storybook/addon-actions in /ui)
     "@storybook/components" "6.4.21"
     "@storybook/core-events" "6.4.21"
     "@storybook/csf" "0.0.2--canary.87bc651.0"
     "@storybook/theming" "6.4.21"
+<<<<<<< HEAD
+=======
+    core-js "^3.8.2"
+    fast-deep-equal "^3.1.3"
+    global "^4.4.0"
+    lodash "^4.17.21"
+    polished "^4.0.5"
+    prop-types "^15.7.2"
+    react-inspector "^5.1.0"
+    regenerator-runtime "^0.13.7"
+    telejson "^5.3.2"
+    ts-dedent "^2.0.0"
+    util-deprecate "^1.0.2"
+    uuid-browser "^3.1.0"
+
+"@storybook/addon-backgrounds@6.4.19":
+  version "6.4.19"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-backgrounds/-/addon-backgrounds-6.4.19.tgz#76435e2037824bb3a6fed9f7d51b9df34fae8af2"
+  integrity sha512-yn8MTE7lctO48Rdw+DmmA1wKdf5eyAbA/vrug5ske/U2WPgGc65sApzwT8BItZfuyAMjuT5RnCWwd7o6hGRgGQ==
+  dependencies:
+    "@storybook/addons" "6.4.19"
+    "@storybook/api" "6.4.19"
+    "@storybook/client-logger" "6.4.19"
+    "@storybook/components" "6.4.19"
+    "@storybook/core-events" "6.4.19"
+    "@storybook/csf" "0.0.2--canary.87bc651.0"
+    "@storybook/theming" "6.4.19"
+>>>>>>> 18c973bd (build(deps-dev): bump @storybook/addon-actions in /ui)
     core-js "^3.8.2"
     global "^4.4.0"
     memoizerific "^1.11.3"
