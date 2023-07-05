@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptrace"
 	"net/url"
 	"path"
 	"time"
@@ -26,6 +27,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/thanos-io/objstore"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace"
 	"golang.org/x/net/context"
 )
 
@@ -182,6 +184,10 @@ func (c *HTTPDebuginfodClient) request(ctx context.Context, u url.URL, buildID s
 	// this request will result in a binary object that contains the customary .*debug_* sections.
 	u.Path = path.Join(u.Path, "buildid", buildID, "debuginfo")
 
+	// Uses the default tracer provider and propagator that's set in tracer package,
+	// or from the span context passed in.
+	ctx = httptrace.WithClientTrace(ctx, otelhttptrace.NewClientTrace(ctx))
+
 	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
@@ -202,6 +208,7 @@ func (c *HTTPDebuginfodClient) handleResponse(ctx context.Context, resp *http.Re
 		case 2:
 			return resp.Body, nil
 		case 3:
+			ctx = httptrace.WithClientTrace(ctx, otelhttptrace.NewClientTrace(ctx))
 			req, err := http.NewRequestWithContext(ctx, "GET", resp.Header.Get("Location"), nil)
 			if err != nil {
 				return nil, fmt.Errorf("create request: %w", err)
