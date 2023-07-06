@@ -28,6 +28,7 @@ import (
 	"github.com/go-kit/log/level"
 	"github.com/thanos-io/objstore"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/net/context"
 )
 
@@ -47,7 +48,9 @@ func (NopDebuginfodClient) Exists(context.Context, string) (bool, error) {
 }
 
 type HTTPDebuginfodClient struct {
+	tp     trace.TracerProvider
 	logger log.Logger
+
 	client *http.Client
 
 	upstreamServers []*url.URL
@@ -62,7 +65,7 @@ type DebuginfodClientObjectStorageCache struct {
 }
 
 // NewHTTPDebuginfodClient returns a new HTTP debug info client.
-func NewHTTPDebuginfodClient(logger log.Logger, serverURLs []string, client *http.Client) (*HTTPDebuginfodClient, error) {
+func NewHTTPDebuginfodClient(tp trace.TracerProvider, logger log.Logger, serverURLs []string, client *http.Client) (*HTTPDebuginfodClient, error) {
 	logger = log.With(logger, "component", "debuginfod")
 	parsedURLs := make([]*url.URL, 0, len(serverURLs))
 	for _, serverURL := range serverURLs {
@@ -79,6 +82,7 @@ func NewHTTPDebuginfodClient(logger log.Logger, serverURLs []string, client *htt
 	}
 
 	return &HTTPDebuginfodClient{
+		tp:              tp,
 		logger:          logger,
 		upstreamServers: parsedURLs,
 		client:          client,
@@ -184,10 +188,7 @@ func (c *HTTPDebuginfodClient) request(ctx context.Context, u url.URL, buildID s
 	// this request will result in a binary object that contains the customary .*debug_* sections.
 	u.Path = path.Join(u.Path, "buildid", buildID, "debuginfo")
 
-	// Uses the default tracer provider and propagator that's set in tracer package,
-	// or from the span context passed in.
-	ctx = httptrace.WithClientTrace(ctx, otelhttptrace.NewClientTrace(ctx))
-
+	ctx = httptrace.WithClientTrace(ctx, otelhttptrace.NewClientTrace(ctx, otelhttptrace.WithTracerProvider(c.tp)))
 	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
@@ -208,7 +209,7 @@ func (c *HTTPDebuginfodClient) handleResponse(ctx context.Context, resp *http.Re
 		case 2:
 			return resp.Body, nil
 		case 3:
-			ctx = httptrace.WithClientTrace(ctx, otelhttptrace.NewClientTrace(ctx))
+			ctx = httptrace.WithClientTrace(ctx, otelhttptrace.NewClientTrace(ctx, otelhttptrace.WithTracerProvider(c.tp)))
 			req, err := http.NewRequestWithContext(ctx, "GET", resp.Header.Get("Location"), nil)
 			if err != nil {
 				return nil, fmt.Errorf("create request: %w", err)

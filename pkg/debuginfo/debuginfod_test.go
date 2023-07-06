@@ -31,6 +31,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/stretchr/testify/require"
 	"github.com/thanos-io/objstore"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/net/context"
 	"gopkg.in/dnaeon/go-vcr.v3/recorder"
 )
@@ -152,9 +153,11 @@ func TestHTTPDebugInfodClientRedirect(t *testing.T) {
 	}))
 	defer rs.Close()
 
-	c, err := NewHTTPDebuginfodClient(log.NewNopLogger(), []string{rs.URL}, &http.Client{
-		Timeout: 30 * time.Second,
-	})
+	c, err := NewHTTPDebuginfodClient(
+		trace.NewNoopTracerProvider(), log.NewNopLogger(), []string{rs.URL},
+		&http.Client{
+			Timeout: 30 * time.Second,
+		})
 	require.NoError(t, err)
 
 	ctx := context.Background()

@@ -384,7 +384,10 @@ func Run(ctx context.Context, logger log.Logger, reg *prometheus.Registry, flags
 
 	var debuginfodClient debuginfo.DebuginfodClient = debuginfo.NopDebuginfodClient{}
 	if len(flags.Debuginfod.UpstreamServers) > 0 {
-		httpDebugInfoClient, err := debuginfo.NewHTTPDebuginfodClient(logger, flags.Debuginfod.UpstreamServers,
+		httpDebugInfoClient, err := debuginfo.NewHTTPDebuginfodClient(
+			tracerProvider,
+			logger,
+			flags.Debuginfod.UpstreamServers,
 			&http.Client{
 				Transport: otelhttp.NewTransport(
 					promconfig.NewUserAgentRoundTripper(
